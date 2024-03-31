@@ -1,5 +1,9 @@
 import { Inter } from "next/font/google";
-import "./globals.css";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { Layout, Menu } from "antd";
+import { Content } from "antd/es/layout/layout";
+import Sider from "antd/es/layout/Sider";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -9,9 +13,36 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+
+  const items1 = ['crud', 'json'].map((key) => ({
+    key: key,
+    label: (<Link href={key === 'json' ? '/json' : '/'}>{key}</Link>),
+  }));
+
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body style={{margin:0}}>
+        <AntdRegistry>
+          <Layout style={{ minHeight: '100vh' }}>
+            <Sider
+              width={200}
+            >
+              <Menu
+                mode="inline"
+                defaultSelectedKeys={['1']}
+                style={{
+                  height: '100%',
+                }}
+                items={items1}
+              >
+              </Menu>
+            </Sider>
+            <Content style={{ padding: '0 24px' }}>
+              {children}
+            </Content>
+          </Layout>
+        </AntdRegistry>
+      </body>
     </html>
   );
 }

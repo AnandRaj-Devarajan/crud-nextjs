@@ -1,95 +1,138 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client"
+import React, { useEffect, useState } from "react";
+import { Avatar, Button, Layout, Menu, message, Popconfirm, Skeleton } from "antd";
+import { Content } from "antd/es/layout/layout";
+import Link from "next/link";
+import CustomTable from "./components/CustomTable";
+import { useRouter } from "next/navigation";
+import AddProductModal from "./components/CreateProduct";
 
 export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const router = useRouter()
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`https://api.escuelajs.co/api/v1/products`);
+      const apiData = await res.json();
+      setData(apiData);
+      setTotalCount(apiData?.length);
+    } catch (error) {
+      message.error('Failed to load');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleCreateProduct = () => fetchData();
+
+  const columns = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+    },
+    {
+      title: 'Title',
+      dataIndex: 'title',
+      key: 'title',
+      render: (data) => <Link href={`/${data.id}`}>{data}</Link>,
+      onCell: (record) => ({
+        onClick: () => router.push(`/${record.id}`),
+      }),
+    },
+    {
+      title: 'Price',
+      dataIndex: 'price',
+      key: 'price',
+    },
+    {
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
+    },
+    {
+      title: 'Category',
+      dataIndex: ['category', 'name'],
+      key: 'category',
+    },
+    {
+      title: 'Image',
+      dataIndex: 'images',
+      key: 'image',
+      render: (images) => (
+        <Avatar src={images[0]} alt={images[0]} width={100} height={100} />
+      ),
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (text, record) => (
+        <span>
+          <Popconfirm
+            title="Are you sure delete this Row"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Yes"
+            cancelText="No"
           >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+            <Button type="danger" style={{ marginLeft: 10 }}>Delete</Button>
+          </Popconfirm>
+        </span>
+      ),
+    },
+  ];
+  const handleClose = () => {
+    setModalVisible(false);
+    fetchData();
+  }
+  return (
+    <main style={{ marginTop: 5 }}>
+      {loading ? <Skeleton /> :
+        (
+          <>
+            <Content
+              style={{
+                padding: '0 48px',
+              }}
+            >
+              <Layout
+                style={{
+                  padding: '12px 0'
+                }}
+              >
+                <Content
+                  style={{
+                    padding: '0 24px',
+                    minHeight: 280,
+                  }}
+                >
+                  <div style={{ marginBottom: '1rem' }}>
+                    <Button type="primary" onClick={() => setModalVisible(true)}>
+                      Add Product
+                    </Button>
+                  </div>
+                  <CustomTable data={data} totalCount={totalCount} fetchData={fetchData} columns={columns} />
+                </Content>
+              </Layout>
+            </Content>
+            <AddProductModal
+              open={modalVisible}
+              onCreate={handleCreateProduct}
+              onCancel={handleClose}
             />
-          </a>
-        </div>
-      </div>
+          </>
+        )
+      }
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
     </main>
   );
 }
+
