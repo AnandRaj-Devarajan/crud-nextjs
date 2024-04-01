@@ -1,4 +1,4 @@
-export const data = {
+export const jsonData = {
     "payment": {
       "id": 1,
       "slug": "none",
