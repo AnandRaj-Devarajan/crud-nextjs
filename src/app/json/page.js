@@ -69,8 +69,8 @@ const page = () => {
               data?.payment?.deposit.map((item) => (
                 < Col span={14} key={item?.id}>
                   <Typography.Title level={5}>Deposit</Typography.Title>
-                  <Card style={{ height: '100%', minHeight: '40vh' }}>
-                    <Flex horizontal style={{ margin: '-24px', height: '40vh', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', minWidth: '100%' }}>
+                  <Card style={{ height: '100%', minHeight: '25vh' }}>
+                    <Flex horizontal style={{ margin: '-24px', height: '25vh', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', minWidth: '100%' }}>
                       <Flex horizontal wrap='wrap' gap={'middle'} style={{ padding: 10 }} >
                         {item?.custom_input.map((val) =>
                           val?.type === 'options' &&
